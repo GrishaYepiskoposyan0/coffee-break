@@ -5,12 +5,10 @@ import {
   queryValidationMiddleware,
   validationMiddleware,
 } from "../../common/middlewares/validation.middleware";
-import {
-  deletePartner,
-  getAllPartners,
-  getPartnerById,
-} from "./partner.service";
+import { branchRouter } from "./branch/branch.router";
 export const partnerRouter: Router = Router();
+
+partnerRouter.use("/branch", branchRouter);
 
 partnerRouter.post(
   "/",
