@@ -14,9 +14,30 @@ datasource db {
 }
 
 model Partner {
-  id              Int     @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   name            String
   cooperationType Int
   tin             String
   isActive        Boolean
+  branches        Branch[]
+}
+
+model Branch {
+  id          Int                        @id @default(autoincrement())
+  name        String
+  partner     Partner                    @relation(fields: [partnerId], references: [id])
+  partnerId   Int
+  locationLat String
+  locationLng String
+  address     String
+  isActive    Boolean
+  contacts    BranchContactInformation[]
+}
+
+model BranchContactInformation {
+  id          Int    @id @default(autoincrement())
+  Branch      Branch @relation(fields: [branchId], references: [id])
+  branchId    Int
+  contactType Int
+  value       String
 }

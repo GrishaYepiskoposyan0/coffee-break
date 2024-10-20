@@ -56,6 +56,9 @@ export const getAllPartners = async (
       getAllPartnersDto.limit !== undefined
         ? +getAllPartnersDto.limit
         : undefined,
+    include: {
+      branches: true,
+    },
   });
 
   return {
@@ -70,6 +73,9 @@ export const getPartnerById = async (
   const partner = await prismaClient.partner.findFirst({
     where: {
       id,
+    },
+    include: {
+      branches: true,
     },
   });
 
@@ -138,14 +144,24 @@ export const deletePartner = async (
       message: "Partner is already inactive!",
     };
   }
-  await prismaClient.partner.update({
-    where: {
-      id,
-    },
-    data: {
-      isActive: false,
-    },
-  });
+  await prismaClient.$transaction([
+    prismaClient.partner.update({
+      where: {
+        id,
+      },
+      data: {
+        isActive: false,
+      },
+    }),
+    prismaClient.branch.updateMany({
+      where: {
+        partnerId: id,
+      },
+      data: {
+        isActive: false,
+      },
+    }),
+  ]);
   return {
     success: true,
     code: StatusCodes.CREATED,
